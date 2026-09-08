@@ -56,6 +56,16 @@ const HAPTIC_TIMING = Object.freeze({
   digitPulseGuardMs: 42,
 });
 
+// Each reel digit is 48px tall. Sampling at half that distance gives the
+// rolling sequence a denser, refined tick cadence without changing its speed.
+const ODOMETER_FEEDBACK_STEP_PX = 24;
+const ODOMETER_FEEDBACK_STEPS = 480 / ODOMETER_FEEDBACK_STEP_PX;
+const ODOMETER_AUDIO = Object.freeze({
+  fallbackVolume: .58,
+  bodyGain: .052,
+  detailGain: .014,
+});
+
 function hapticsCanPlay() {
   if (app.dataset.haptics === 'off') return false;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
@@ -157,7 +167,9 @@ function ensureFallbackAudio() {
   if (fallbackAudioReady) return;
   Object.entries(fallbackAudio).forEach(([kind, audio]) => {
     if (!audio.getAttribute('src')) audio.src = wavDataUri(kind);
-    audio.volume = kind === 'tick' ? .2 : (kind === 'settled' ? .3 : .27);
+    audio.volume = kind === 'tick'
+      ? ODOMETER_AUDIO.fallbackVolume
+      : (kind === 'settled' ? .3 : .27);
     audio.playbackRate = Number(audio.dataset.playbackRate || 1);
     audio.preservesPitch = false;
     audio.webkitPreservesPitch = false;
@@ -303,8 +315,8 @@ function playOdometerTick() {
     createTone({
       frequency: 470,
       endFrequency: 315,
-      gain: .017,
-      duration: .034,
+      gain: ODOMETER_AUDIO.bodyGain,
+      duration: .042,
       attack: .002,
       type: 'triangle',
       filterFrequency: 1450,
@@ -312,8 +324,8 @@ function playOdometerTick() {
     createTone({
       frequency: 1180,
       endFrequency: 820,
-      gain: .005,
-      duration: .021,
+      gain: ODOMETER_AUDIO.detailGain,
+      duration: .027,
       attack: .0015,
       type: 'square',
       filterFrequency: 1750,
@@ -344,16 +356,20 @@ function stopOdometerTicks() {
 function startOdometerTicks() {
   stopOdometerTicks();
   if (!audioCanPlay() && !hapticsCanPlay()) return;
-  let lastDigit = Math.round(Math.abs(reelTranslateY(odometerTickTrack)) / 48);
+  let lastStep = Math.round(
+    Math.abs(reelTranslateY(odometerTickTrack)) / ODOMETER_FEEDBACK_STEP_PX,
+  );
 
   const followReel = () => {
-    const currentDigit = Math.round(Math.abs(reelTranslateY(odometerTickTrack)) / 48);
-    if (currentDigit > lastDigit) {
+    const currentStep = Math.round(
+      Math.abs(reelTranslateY(odometerTickTrack)) / ODOMETER_FEEDBACK_STEP_PX,
+    );
+    if (currentStep > lastStep) {
       playOdometerTick();
       triggerOdometerHaptic();
-      lastDigit = currentDigit;
+      lastStep = currentStep;
     }
-    if (currentDigit < 10 && app.classList.contains('is-savings-animating')) {
+    if (currentStep < ODOMETER_FEEDBACK_STEPS && app.classList.contains('is-savings-animating')) {
       odometerTickFrame = window.requestAnimationFrame(followReel);
     }
   };
