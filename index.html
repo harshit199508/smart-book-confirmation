@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="An interactive Smart Book booking-confirmation preview." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Booking Confirmed · Smart Book" />
+    <meta property="og:description" content="Open the animated Smart Book booking-confirmation preview." />
+    <meta property="og:image" content="./social-preview.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Booking Confirmed · Smart Book" />
+    <meta name="twitter:description" content="Open the animated Smart Book booking-confirmation preview." />
+    <meta name="twitter:image" content="./social-preview.png" />
+    <title>Booking confirmed</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <img
+        class="screen-background"
+        src="./assets/booking-screen-375x812.png"
+        alt="Booking details screen"
+        width="375"
+        height="812"
+      />
+      <p class="sr-only">Booking confirmation demo</p>
+
+      <div class="backdrop" data-backdrop></div>
+
+      <section
+        class="sheet-layer"
+        data-sheet-layer
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirmation-title"
+      >
+        <button class="liquid-glass-button glass-close" data-close data-figma-node="10192:204831" type="button" aria-label="Close confirmation">
+          <img src="./assets/close.svg" alt="" width="24" height="24" />
+        </button>
+
+        <article class="sheet" data-sheet>
+          <div class="drag-zone" data-drag-zone aria-hidden="true">
+            <span class="drag-handle"></span>
+          </div>
+
+          <div class="sheet__wash" aria-hidden="true"></div>
+          <h1 class="ghost-title" aria-hidden="true">Booking<br />Confirmed</h1>
+
+          <div class="content">
+            <div class="celebration" aria-hidden="true">
+              <div class="lock-logo">
+                <img class="lock-part lock-part--shackle-fill" src="./assets/lock-shackle-fill.svg" alt="" />
+                <img class="lock-part lock-part--shackle-stroke" src="./assets/lock-shackle-stroke.svg" alt="" />
+                <img class="lock-part lock-part--body-base" src="./assets/lock-body-base.svg" alt="" />
+                <img class="lock-part lock-part--body-left" src="./assets/lock-body-left.svg" alt="" />
+                <img class="lock-part lock-part--body-right" src="./assets/lock-body-right.svg" alt="" />
+                <img class="lock-part lock-part--shield-stroke" src="./assets/shield-stroke.svg" alt="" />
+                <img class="lock-part lock-part--shield-fill" src="./assets/shield-fill.svg" alt="" />
+                <img class="lock-part lock-part--shield-highlight" src="./assets/shield-highlight.svg" alt="" />
+                <img class="lock-part lock-part--star-base" src="./assets/star-base.svg" alt="" />
+                <img class="lock-part lock-part--star-fill" src="./assets/star-fill.svg" alt="" />
+                <img class="lock-part lock-part--star-highlight" src="./assets/star-highlight.svg" alt="" />
+              </div>
+              <span class="sparkle sparkle--one"><img src="./assets/sparkle.png" alt="" /></span>
+              <span class="sparkle sparkle--two"><img src="./assets/sparkle.png" alt="" /></span>
+              <span class="sparkle sparkle--three"><img src="./assets/sparkle.png" alt="" /></span>
+            </div>
+
+            <div class="message">
+              <h2 id="confirmation-title">Flight booked in your budget</h2>
+              <p>You Saved</p>
+            </div>
+
+            <div class="saving-wrap">
+              <div class="coin coin--left" aria-hidden="true">
+                <img src="./assets/coins-strip.png" alt="" />
+              </div>
+              <div class="coin coin--left-small" aria-hidden="true">
+                <img class="coin__shadow" src="./assets/coin.png" alt="" />
+                <img class="coin__face" src="./assets/coin.png" alt="" />
+              </div>
+              <strong class="saving" data-saving aria-label="₹300">
+                <span class="saving__visual" aria-hidden="true">
+                  <span class="saving__currency">₹</span>
+                  <span class="digit-window">
+                    <span class="digit-track digit-track--hundreds">
+                      <span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>
+                    </span>
+                  </span>
+                  <span class="digit-window">
+                    <span class="digit-track digit-track--tens">
+                      <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+                    </span>
+                  </span>
+                  <span class="digit-window">
+                    <span class="digit-track digit-track--ones">
+                      <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+                    </span>
+                  </span>
+                </span>
+                <span class="saving-shimmer saving-shimmer--initial" aria-hidden="true">₹300</span>
+                <span class="saving-shimmer saving-shimmer--final" aria-hidden="true">₹800</span>
+              </strong>
+              <div class="coin coin--right-small" aria-hidden="true">
+                <img src="./assets/coin.png" alt="" />
+              </div>
+              <div class="coin coin--right" aria-hidden="true">
+                <img src="./assets/coins-strip.png" alt="" />
+              </div>
+            </div>
+
+            <div class="credit-note">
+              <span class="credit-note__tip" aria-hidden="true"></span>
+              <span><b>₹500</b> credited to ixigo money max</span>
+            </div>
+
+            <div class="smart-book-label">
+              <span class="rule rule--left"></span>
+              <span>Saved with Smart Book</span>
+              <span class="rule rule--right"></span>
+            </div>
+
+            <button class="primary-action" data-action type="button">Yay! Thanks</button>
+          </div>
+        </article>
+      </section>
+
+      <button class="replay" data-replay type="button">Show confirmation</button>
+    </main>
+    <audio
+      data-sfx="reveal"
+      src="./assets/savings-chime.wav"
+      preload="auto"
+      aria-hidden="true"
+    ></audio>
+    <audio data-sfx="tick" preload="auto" aria-hidden="true"></audio>
+    <audio
+      data-sfx="settled"
+      data-playback-rate="1.12"
+      src="./assets/savings-chime.wav"
+      preload="auto"
+      aria-hidden="true"
+    ></audio>
+    <script src="./app.js"></script>
+  </body>
+</html>
