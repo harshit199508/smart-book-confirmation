@@ -30,6 +30,8 @@ let odometerTickFrame;
 let savingsSequenceStartedAt = 0;
 let amountRevealSoundPlayed = false;
 let savingsSettleSoundPlayed = false;
+let lastSheetHapticAt = 0;
+let lastDigitHapticAt = 0;
 const twinkleTimers = new Set();
 const twinkleAnimations = new Set();
 const activeTwinkleAnimations = new Map();
@@ -46,6 +48,39 @@ let fallbackAudioReady = false;
 let fallbackAudioPrimed = false;
 let activeChimeOscillators = [];
 let activeTickOscillators = [];
+
+const HAPTIC_TIMING = Object.freeze({
+  mediumPulseMs: 35,
+  duplicateGuardMs: 500,
+  digitPulseMs: 8,
+  digitPulseGuardMs: 42,
+});
+
+function hapticsCanPlay() {
+  if (app.dataset.haptics === 'off') return false;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+  if (typeof navigator.vibrate !== 'function') return false;
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return false;
+  return true;
+}
+
+function triggerSheetOpenHaptic() {
+  if (!hapticsCanPlay()) return false;
+
+  const now = performance.now();
+  if (now - lastSheetHapticAt < HAPTIC_TIMING.duplicateGuardMs) return false;
+  lastSheetHapticAt = now;
+  return navigator.vibrate(HAPTIC_TIMING.mediumPulseMs);
+}
+
+function triggerOdometerHaptic() {
+  if (!hapticsCanPlay()) return false;
+
+  const now = performance.now();
+  if (now - lastDigitHapticAt < HAPTIC_TIMING.digitPulseGuardMs) return false;
+  lastDigitHapticAt = now;
+  return navigator.vibrate(HAPTIC_TIMING.digitPulseMs);
+}
 
 function appIsMuted() {
   return app.dataset.muted === 'true' || document.documentElement.dataset.muted === 'true';
@@ -308,13 +343,14 @@ function stopOdometerTicks() {
 
 function startOdometerTicks() {
   stopOdometerTicks();
-  if (!audioCanPlay()) return;
+  if (!audioCanPlay() && !hapticsCanPlay()) return;
   let lastDigit = Math.round(Math.abs(reelTranslateY(odometerTickTrack)) / 48);
 
   const followReel = () => {
     const currentDigit = Math.round(Math.abs(reelTranslateY(odometerTickTrack)) / 48);
     if (currentDigit > lastDigit) {
       playOdometerTick();
+      triggerOdometerHaptic();
       lastDigit = currentDigit;
     }
     if (currentDigit < 10 && app.classList.contains('is-savings-animating')) {
@@ -515,6 +551,7 @@ function startSavingsAnimation() {
 }
 
 function openSheet() {
+  triggerSheetOpenHaptic();
   removeSoundSyncListeners();
   stopTwinkles();
   stopOdometerTicks();
@@ -616,6 +653,8 @@ closeButton.addEventListener('click', closeSheet);
 actionButton.addEventListener('click', closeSheet);
 backdrop.addEventListener('click', closeSheet);
 replayButton.addEventListener('click', () => {
+  // Trigger within the tap's user-activation window; openSheet is delayed for dimming.
+  triggerSheetOpenHaptic();
   app.classList.add('is-dimming');
   window.setTimeout(openSheet, 240);
 });
